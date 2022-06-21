@@ -1,2 +1,26 @@
 @import './common';
 @import './example';
+
+.gallery {
+
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 20px;
+	gap: 10px;
+	justify-content: center;
+}
+
+.info {
+	display: flex;
+	gap: 5%; 
+	justify-content: center;
+}
+
+.info-item {
+	font-size: 8px;
+	justify-content: center;
+}
+
+.is-hidden {
+	display: none;
+}
