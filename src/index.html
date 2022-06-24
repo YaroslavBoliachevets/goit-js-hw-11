@@ -8,18 +8,21 @@
     <script type="module" src="./index.js"></script>
   </head>
   <body>
+    <div class="search-wrapper">
+      <form class="search-form" id="search-form">
+        <input
+          type="text"
+          name="searchQuery"
+          autocomplete="off"
+          placeholder="Search images..."
+        />
+        <button type="submit" class="form-button">
+          <svg class="icon icon-search" width="12px" height="12px"><use href="./images/icons.svg#icon-search"></use></svg>
+        </button>
+      </form>
+    </div>
 
-    <form class="search-form" id="search-form">
-      <input
-        type="text"
-        name="searchQuery"
-        autocomplete="off"
-        placeholder="Search images..."
-      />
-      <button type="submit">Search</button>
-    </form>
-
-    <div class="gallery">
+    <div class="gallery-container">
       <!-- Карточки изображений -->
     </div>
     <button type="button" class="load-more is-hidden">Load more</button>

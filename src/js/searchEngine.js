@@ -4,7 +4,8 @@ export default class searchEngine {
 	constructor() {
 	  this.searchQuery = '';
 	  this.page = 1;
-	  this.perPage = 50;
+	  this.perPage = 40;
+	  this.gallery;
 	}
   
 	async fetchResult() {

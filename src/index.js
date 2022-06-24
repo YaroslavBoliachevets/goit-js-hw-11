@@ -1,14 +1,19 @@
-// const axios = require('axios');
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+
+// Описан в документации
+import SimpleLightbox from 'simplelightbox';
+// Дополнительный импорт стилей
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 import LoadMoreBtn from './js/loadMoreBtn';
 import SearchEngine from './js/searchEngine';
 
 const refs = {
   form: document.querySelector('.search-form'),
-  btn: document.querySelector('button'),
+  photoCard: document.querySelector('.photo-card'),
+  // photo-card: document.querySelector('.photo-card'),
   btnLoadMore: document.querySelector('.load-more'),
-  gallery: document.querySelector('.gallery'),
+  gallery: document.querySelector('.gallery-container'),
 };
 
 const searchEngine = new SearchEngine();
@@ -16,6 +21,7 @@ const loadMoreBtn = new LoadMoreBtn({
   selector: '.load-more',
   hidden: true,
 });
+let gallery;
 
 refs.form.addEventListener('submit', onSearch);
 refs.btnLoadMore.addEventListener('click', onLoadMore);
@@ -49,7 +55,6 @@ function onSearch(e) {
 
       // Если найденных больше чем отрисованных, то создаем кнопку "загрузить еще"
       if (responce.data.hits.length < responce.data.total) {
-        // console.log('Появится кнопка');
         loadMoreBtn.show();
       }
 
@@ -59,7 +64,10 @@ function onSearch(e) {
         responce.data.hits.map(makeMurkup).join('')
       );
     })
-    .then(data => searchEngine.incrementPage());
+    .then(data => {
+      searchEngine.incrementPage();
+      gallery = new SimpleLightbox('.gallery a', { captionsData:'alt', captionDelay: 250 });
+    });
 
   // Очистка строки поиска
   e.currentTarget.elements.searchQuery.value = '';
@@ -74,8 +82,9 @@ function makeMurkup({
   comments,
   downloads,
 }) {
-  return `<div class="photo-card">
-	<img src=${webformatURL} width='200px' alt=${tags} loading="lazy" />
+  return `<div class="gallery">
+  <a href="${largeImageURL}" class="photo-card">
+	<img class="gallery-img" src=${webformatURL} width='200px' alt=${tags} loading="lazy" />
 	<div class="info">
 	  <p class="info-item">
 		<b>Likes:</b> <br> ${likes}
@@ -90,46 +99,35 @@ function makeMurkup({
 		<b>Downloads: </b><br> ${downloads}
 	  </p>
 	</div>
-	</div>`;
+	</a>
+  </div>`;
 }
 
 function clearRender() {
   refs.gallery.innerHTML = '';
 }
 
-async function onLoadMore(e) {
+function onLoadMore(e) {
   e.preventDefault();
   searchEngine
     .fetchResult()
     .then(responce => {
-      // В случает когда количество найденных ответов будет кратно кол-ву на странице (40) - прячем кнопку, или 
+      // В случает когда количество найденных ответов будет кратно кол-ву на странице (40) - прячем кнопку, или
       // Если кол-во оставшихся для подзагрузки картинок меньше чем мы должны вместить на страницу (40) - прячем кнопку
-      console.log('responce.data.hits.length * searchEngine.page == responce.data.total', (responce.data.hits.length * searchEngine.page) ==
-      responce.data.total);
-
-      console.log('responce.data.hits.length * searchEngine.page < searchEngine.perPage', responce.data.hits.length * searchEngine.page < searchEngine.perPage);
-
-      console.log('responce.data.hits.length', responce.data.hits.length, 'searchEngine.page', searchEngine.page);
-      console.log('responce.data.total', responce.data.total);
-      console.log('searchEngine.perPage', searchEngine.perPage);
-      
-      
-      
-      
-        if (
-          responce.data.hits.length * searchEngine.page ==
-            responce.data.total ||
-          responce.data.hits.length < searchEngine.perPage
-        ) {
-          Notify.failure('Thats all');
-          // console.log('Спрятать кнопку');
-          loadMoreBtn.hide();
-        }
+      if (
+        responce.data.hits.length * searchEngine.page == responce.data.total ||
+        responce.data.hits.length < searchEngine.perPage
+      ) {
+        Notify.info('Thats all');
+        // console.log('Спрятать кнопку');
+        loadMoreBtn.hide();
+      }
 
       return refs.gallery.insertAdjacentHTML(
         'beforeend',
         responce.data.hits.map(makeMurkup).join('')
       );
     })
-    .then(data => searchEngine.incrementPage());
+    .then(data => {searchEngine.incrementPage();
+      gallery.refresh();});
 }
