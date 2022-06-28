@@ -44,7 +44,7 @@ function onSearch(e) {
     .fetchResult()
     .then(responce => {
       // Уведомление - ничего не нашли
-      if (responce.data.total === '0') {
+      if (responce.data.total === 0) {
         return Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
