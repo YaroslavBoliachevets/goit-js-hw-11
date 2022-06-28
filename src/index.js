@@ -27,8 +27,8 @@ refs.form.addEventListener('submit', onSearch);
 refs.btnLoadMore.addEventListener('click', onLoadMore);
 
 function onSearch(e) {
-  searchEngine.query = e.currentTarget.elements.searchQuery.value;
-
+  searchEngine.query = e.currentTarget.elements.searchQuery.value.trim();
+  
   if (searchEngine.query == '') {
     return clearRender();
   }
@@ -44,7 +44,7 @@ function onSearch(e) {
     .fetchResult()
     .then(responce => {
       // Уведомление - ничего не нашли
-      if (responce.data.total == '0') {
+      if (responce.data.total == 0) {
         return Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
@@ -115,7 +115,7 @@ function onLoadMore(e) {
       // В случает когда количество найденных ответов будет кратно кол-ву на странице (40) - прячем кнопку, или
       // Если кол-во оставшихся для подзагрузки картинок меньше чем мы должны вместить на страницу (40) - прячем кнопку
       if (
-        responce.data.hits.length * searchEngine.page == responce.data.total ||
+        responce.data.hits.length * searchEngine.page === responce.data.total ||
         responce.data.hits.length < searchEngine.perPage
       ) {
         Notify.info('Thats all');
